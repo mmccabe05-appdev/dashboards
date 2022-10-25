@@ -10,13 +10,9 @@ class ApplicationController < ActionController::Base
     @raw_symbol_data = open("https://api.exchangerate.host/symbols").read
     @symbol_parsed_data = JSON.parse(@raw_symbol_data)
     @symbol_hash = @symbol_parsed_data.fetch("symbols")
-    
+
     @symbol_array = @symbol_hash.keys
 
-
-    # 10.times do |position|
-    #   @symbol_array[position] = symbol_hash.fetch("symbols").to_s
-    # end
     render({ :template => "forex.html.erb" })
   end
 
@@ -26,17 +22,30 @@ class ApplicationController < ActionController::Base
 
   def first_currency
     @raw_symbol_data = open("https://api.exchangerate.host/symbols").read
-    symbol_hash = JSON.parse(@raw_symbol_data)
-    @symbol_array = Array.new
+    @symbol_parsed_data = JSON.parse(@raw_symbol_data)
+    @symbol_hash = @symbol_parsed_data.fetch("symbols")
 
-    10.times do |position|
-      @symbol_array[position] = symbol_hash.fetch("symbols").to_s
-    end
+    @symbol_array = @symbol_hash.keys
+
+    @first_currency = params.fetch(:first_currency).to_s
 
     render({ :template => "first_currency.html.erb" })
   end
 
   def first_currency_second_currency
+    @raw_symbol_data = open("https://api.exchangerate.host/symbols").read
+    @symbol_parsed_data = JSON.parse(@raw_symbol_data)
+    @symbol_hash = @symbol_parsed_data.fetch("symbols")
+
+    @symbol_array = @symbol_hash.keys
+
+    @first_currency = params.fetch(:first_currency).to_s
+    @second_currency = params.fetch(:second_currency).to_s
+    @currency_url = "https://api.exchangerate.host/convert?from=FROMCURRENCY&to=TOCURRENCY".gsub("FROMCURRENCY", @first_currency).gsub("TOCURRENCY", @second_currency)
+    @raw_exchange_data = open(@currency_url).read
+    @parsed_exchange_data = JSON.parse(@raw_exchange_data)
+    
+
     render({ :template => "first_currency_second_currency.html.erb" })
   end
 end
